@@ -11,7 +11,7 @@ router.route("/signup")
 .post(checkExistingUsername, async(req, res) => {
     try {
         const user = req.body
-        const newUser = new User({username: user.username, password: bcrypt.hashSync(user.password, 8)})
+        const newUser = new User({...user, password: bcrypt.hashSync(user.password, 8)})
         const savedUser = await newUser.save()
         res.json({success: true, message: "User signed up", data: savedUser})
     } catch (err) {
@@ -42,8 +42,8 @@ router.route("/signin")
         //generate a token
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: 86400 })
         req.user = user
-        // console.log(user)
-        res.json({success: true, message: "User signed in successfully", user: existingUser})
+        console.log(user)
+        res.json({success: true, message: "User signed in successfully", user: existingUser, authToken: token})
     } catch (err) {
         console.log("Error occurred whie signing user in")
         res.json({success: false, message: "Error occurred while signing in", errMessage: err.message})
